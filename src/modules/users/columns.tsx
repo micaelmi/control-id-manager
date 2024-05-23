@@ -1,18 +1,22 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/ui/column";
+import { Trash } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteUser } from "./actions/delete";
+import { useUserUpdate } from "@/contexts/user-update-context";
+import { toast } from "react-toastify";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -62,5 +66,54 @@ export const columns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Data de fim" />
     ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const user = row.original;
+      const id = user.id;
+
+      async function confirm(id: number) {
+        const { triggerUpdate } = useUserUpdate();
+        const user: UserResponse | null = await deleteUser(id);
+        console.log(user);
+        if (user && user.status === 200 && user.data.changes === 1) {
+          toast.success("Usuário excluído!", {
+            theme: "colored",
+          });
+          triggerUpdate();
+        } else {
+          toast.error("Algo deu errado", {
+            theme: "colored",
+          });
+        }
+      }
+
+      return (
+        <>
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Trash />
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Tem certeza que você deseja excluir este usuário?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não poderá ser desfeita.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={() => confirm(id)}>
+                  Confirmar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
+      );
+    },
   },
 ];

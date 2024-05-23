@@ -1,11 +1,10 @@
 // POST /create_objects.fcgi
 "use client";
-import { object, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
@@ -21,6 +20,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "@/lib/axios";
 import Cookies from "js-cookie";
+import { useUserUpdate } from "@/contexts/user-update-context";
+import { FilePlus2Icon } from "lucide-react";
 
 const FormSchema = z.object({
   registration: z.string({ message: "Digite um número" }),
@@ -31,6 +32,7 @@ const FormSchema = z.object({
 });
 
 export function CreateUser() {
+  const { triggerUpdate } = useUserUpdate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -63,6 +65,7 @@ export function CreateUser() {
           registration: "",
           name: "",
         });
+        triggerUpdate();
       }
     } catch (error) {
       toast.error("Erro ao registrar", {
@@ -75,7 +78,9 @@ export function CreateUser() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Criar usuário</Button>
+        <Button className="flex gap-2">
+          <FilePlus2Icon /> Criar usuário
+        </Button>
       </SheetTrigger>
       <SheetContent side={"left"}>
         <SheetHeader>
