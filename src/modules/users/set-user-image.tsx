@@ -116,7 +116,7 @@ export function UserSetImage({ id }: { id: number }) {
           <ImageUp />
         </Button>
       </SheetTrigger>
-      <SheetContent side={"left"}>
+      <SheetContent side={"right"}>
         <SheetHeader>
           <SheetTitle>Definir imagem</SheetTitle>
           <SheetDescription>

@@ -1,4 +1,4 @@
-interface UserResponse {
+interface DeleteResponse {
   data: {
     changes: number;
   };

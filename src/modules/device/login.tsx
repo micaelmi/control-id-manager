@@ -7,9 +7,25 @@ import Cookies from "js-cookie";
 export default function Login() {
   const [status, setStatus] = useState<string>("Tentando conectar...");
 
-  useEffect(() => {
-    async function login() {
-      const ip = process.env.NEXT_PUBLIC_DEVICE_IP || "0.0.0.0";
+  async function login() {
+    const ip = process.env.NEXT_PUBLIC_DEVICE_IP || "0.0.0.0";
+    const session = Cookies.get("session");
+    // se já tiver uma sessão, verifica se é válida
+    if (session) {
+      try {
+        const response = await api.post(
+          `session_is_valid.fcgi?session=${session}`
+        );
+        if (response.data.session_is_valid) {
+          setStatus(`Conectado em: ${ip}`);
+          return;
+        }
+      } catch (error) {
+        setStatus("Erro ao tentar conectar");
+      }
+    }
+    // se não houver sessão ou ela não for validada, faz o login
+    if (status !== `Conectado em: ${ip}`) {
       try {
         const response = await api.post("login.fcgi", {
           login: process.env.NEXT_PUBLIC_DEVICE_LOGIN || "",
@@ -27,9 +43,11 @@ export default function Login() {
         setStatus("Erro ao tentar conectar");
       }
     }
+  }
 
+  useEffect(() => {
     login();
   }, []);
 
-  return <Badge>{status}</Badge>;
+  return <Badge className="max-w-fit mt-2">{status}</Badge>;
 }

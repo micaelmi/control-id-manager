@@ -20,25 +20,21 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "@/lib/axios";
 import Cookies from "js-cookie";
-import { useUserUpdate } from "@/contexts/user-update-context";
 import { FilePlus2Icon } from "lucide-react";
+import { useGroupUpdate } from "@/contexts/group-update-context";
 
 const FormSchema = z.object({
-  registration: z.string({ message: "Digite um número" }),
-  name: z.string().min(6, {
-    message: "Digite o nome completo.",
+  name: z.string().min(2, {
+    message: "Digite o nome do grupo.",
   }),
-  password: z.string().optional(),
 });
 
-export function CreateUser() {
-  const { triggerUpdate } = useUserUpdate();
+export function CreateGroup() {
+  const { triggerUpdate } = useGroupUpdate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      registration: "",
       name: "",
-      password: "",
     },
   });
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -47,22 +43,19 @@ export function CreateUser() {
       const response = await api.post(
         `create_objects.fcgi?session=${session}`,
         {
-          object: "users",
+          object: "groups",
           values: [
             {
-              registration: data.registration,
               name: data.name,
-              password: data.password,
             },
           ],
         }
       );
       if (response.status === 200) {
-        toast.success("Usuário registrado!", {
+        toast.success("Grupo registrado!", {
           theme: "colored",
         });
         form.reset({
-          registration: "",
           name: "",
         });
         triggerUpdate();
@@ -79,14 +72,14 @@ export function CreateUser() {
     <Sheet>
       <SheetTrigger asChild>
         <Button className="flex gap-2">
-          <FilePlus2Icon /> Criar usuário
+          <FilePlus2Icon /> Criar grupo
         </Button>
       </SheetTrigger>
       <SheetContent side={"right"}>
         <SheetHeader>
-          <SheetTitle>Criar usuário</SheetTitle>
+          <SheetTitle>Criar grupo</SheetTitle>
           <SheetDescription>
-            Cadastre aqui um novo usuário para o sistema.
+            Cadastre aqui um novo grupo de usuários.
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -96,23 +89,9 @@ export function CreateUser() {
           >
             <InputItem
               control={form.control}
-              type="number"
-              name="registration"
-              label="Número de registro"
-              placeholder="Digite o número de registro do usuário"
-            />
-            <InputItem
-              control={form.control}
               name="name"
-              label="Nome completo"
-              placeholder="Digite o nome do usuário"
-            />
-            <InputItem
-              control={form.control}
-              type="number"
-              name="password"
-              label="Senha"
-              placeholder="Digite uma senha numérica para o usuário"
+              label="Nome do grupo"
+              placeholder="Digite o nome do grupo"
             />
             <SheetFooter>
               <SheetClose asChild>

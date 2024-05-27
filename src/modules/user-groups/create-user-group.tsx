@@ -20,25 +20,21 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "@/lib/axios";
 import Cookies from "js-cookie";
-import { useUserUpdate } from "@/contexts/user-update-context";
 import { FilePlus2Icon } from "lucide-react";
+import { useGroupUpdate } from "@/contexts/group-update-context";
 
 const FormSchema = z.object({
-  registration: z.string({ message: "Digite um número" }),
-  name: z.string().min(6, {
-    message: "Digite o nome completo.",
-  }),
-  password: z.string().optional(),
+  user_id: z.string(),
+  group_id: z.string(),
 });
 
-export function CreateUser() {
-  const { triggerUpdate } = useUserUpdate();
+export function CreateUserGroup() {
+  const { triggerUpdate } = useGroupUpdate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      registration: "",
-      name: "",
-      password: "",
+      user_id: "",
+      group_id: "",
     },
   });
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -47,23 +43,22 @@ export function CreateUser() {
       const response = await api.post(
         `create_objects.fcgi?session=${session}`,
         {
-          object: "users",
+          object: "user_groups",
           values: [
             {
-              registration: data.registration,
-              name: data.name,
-              password: data.password,
+              user_id: Number(data.user_id),
+              group_id: Number(data.group_id),
             },
           ],
         }
       );
       if (response.status === 200) {
-        toast.success("Usuário registrado!", {
+        toast.success("Grupo registrado!", {
           theme: "colored",
         });
         form.reset({
-          registration: "",
-          name: "",
+          user_id: "",
+          group_id: "",
         });
         triggerUpdate();
       }
@@ -79,15 +74,13 @@ export function CreateUser() {
     <Sheet>
       <SheetTrigger asChild>
         <Button className="flex gap-2">
-          <FilePlus2Icon /> Criar usuário
+          <FilePlus2Icon /> Criar relação
         </Button>
       </SheetTrigger>
       <SheetContent side={"right"}>
         <SheetHeader>
-          <SheetTitle>Criar usuário</SheetTitle>
-          <SheetDescription>
-            Cadastre aqui um novo usuário para o sistema.
-          </SheetDescription>
+          <SheetTitle>Criar relação</SheetTitle>
+          <SheetDescription>Relacione um usuário a um grupo.</SheetDescription>
         </SheetHeader>
         <Form {...form}>
           <form
@@ -97,22 +90,16 @@ export function CreateUser() {
             <InputItem
               control={form.control}
               type="number"
-              name="registration"
-              label="Número de registro"
-              placeholder="Digite o número de registro do usuário"
-            />
-            <InputItem
-              control={form.control}
-              name="name"
-              label="Nome completo"
-              placeholder="Digite o nome do usuário"
+              name="user_id"
+              label="ID do usuário"
+              placeholder="Digite o ID do usuário"
             />
             <InputItem
               control={form.control}
               type="number"
-              name="password"
-              label="Senha"
-              placeholder="Digite uma senha numérica para o usuário"
+              name="group_id"
+              label="ID do grupo"
+              placeholder="Digite o ID do grupo"
             />
             <SheetFooter>
               <SheetClose asChild>

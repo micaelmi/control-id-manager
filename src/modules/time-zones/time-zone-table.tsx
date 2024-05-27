@@ -2,11 +2,9 @@
 import { useState, useEffect } from "react";
 import api from "@/lib/axios";
 import Cookies from "js-cookie";
-import { useUserUpdate } from "@/contexts/user-update-context";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -25,36 +23,36 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2Icon } from "lucide-react";
 import { toast } from "react-toastify";
-import { UserSetImage } from "./set-user-image";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { deleteObject } from "@/lib/delete-item";
+import { useTimeZoneUpdate } from "@/contexts/time-zone-update-context";
 
-export default function UserTable() {
-  const { update } = useUserUpdate();
-  const [users, setUsers] = useState<User[]>([]);
-  async function getUsers() {
+export default function TimeZonesTable() {
+  const { update } = useTimeZoneUpdate();
+  const [timeZones, setTimeZones] = useState<TimeZones[]>([]);
+  async function getTimeZones() {
     const session = Cookies.get("session");
     try {
       const response = await api.post(`load_objects.fcgi?session=${session}`, {
-        object: "users",
+        object: "time_zones",
       });
-      setUsers(response.data.users);
+      setTimeZones(response.data.time_zones);
     } catch (error) {
       console.log(error);
     }
   }
   useEffect(() => {
-    getUsers();
+    getTimeZones();
   }, [update]);
 
   async function confirmAlert(id: number) {
-    const user: DeleteResponse | null = await deleteObject("user", id);
-    if (user && user.status === 200 && user.data.changes === 1) {
-      toast.success("Usuário excluído!", {
+    const group: DeleteResponse | null = await deleteObject("time_zones", id);
+    if (group && group.status === 200 && group.data.changes === 1) {
+      toast.success("Horário excluído!", {
         theme: "colored",
       });
-      getUsers();
+      getTimeZones();
     } else {
       toast.error("Algo deu errado", {
         theme: "colored",
@@ -63,43 +61,22 @@ export default function UserTable() {
   }
 
   return (
-    <div className="w-full max-h-[58vh] overflow-auto">
+    <div className="w-full max-h-[60vh] overflow-auto">
       <Table className="w-full border">
         <TableHeader>
           <TableRow className="bg-secondary hover:bg-secondary">
             <TableHead>ID</TableHead>
-            <TableHead>Registro</TableHead>
             <TableHead>Nome</TableHead>
-            <TableHead>Senha</TableHead>
-            <TableHead>Salt</TableHead>
-            <TableHead>Tipo</TableHead>
-            <TableHead>Data de início</TableHead>
-            <TableHead>Data de fim</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.length > 0 ? (
-            users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
+          {timeZones.length > 0 ? (
+            timeZones.map((time_zone) => (
+              <TableRow key={time_zone.id}>
+                <TableCell>{time_zone.id}</TableCell>
+                <TableCell>{time_zone.name}</TableCell>
                 <TableCell>
-                  {user.registration ? user.registration : "-"}
-                </TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.password ? user.password : "-"}</TableCell>
-                <TableCell>{user.salt ? user.salt : "-"}</TableCell>
-                <TableCell>
-                  {user.user_type_id ? user.user_type_id : "padrão"}
-                </TableCell>
-                <TableCell>
-                  {user.begin_time ? user.begin_time : "indefinida"}
-                </TableCell>
-                <TableCell>
-                  {user.end_time ? user.end_time : "indefinida"}
-                </TableCell>
-                <TableCell>
-                  <UserSetImage id={user.id} />
                   <AlertDialog>
                     <AlertDialogTrigger
                       className={cn(
@@ -112,7 +89,7 @@ export default function UserTable() {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
-                          Tem certeza que você deseja excluir este usuário?
+                          Tem certeza que você deseja excluir este horário?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                           Esta ação não poderá ser desfeita.
@@ -121,7 +98,7 @@ export default function UserTable() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => confirmAlert(user.id)}
+                          onClick={() => confirmAlert(time_zone.id)}
                         >
                           Confirmar
                         </AlertDialogAction>

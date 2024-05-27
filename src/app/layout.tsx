@@ -3,6 +3,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Nunito } from "next/font/google";
 import Header from "@/components/header";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Login from "@/modules/device/login";
 
 const main_font = Nunito({
   weight: ["400", "600", "700"],
@@ -27,10 +30,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="w-full h-20 bg-primary"></div>
-          <main className="flex min-h-screen max-w-5xl mx-auto flex-col p-8">
+          <div className="w-full h-2 bg-primary"></div>
+          <main className="flex max-w-5xl mx-auto flex-col p-8 pb-4">
             <Header />
+            <Login />
             {children}
+            <ToastContainer autoClose={2500} />
           </main>
         </ThemeProvider>
       </body>
