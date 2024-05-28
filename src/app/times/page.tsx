@@ -8,6 +8,8 @@ import TimeSpansTable from "@/modules/time-spans/time-span-table";
 import AccessRulesTable from "@/modules/access-rules/access-rule-table";
 import AccessRuleTimeZonesTable from "@/modules/access-rule-time-zones/access-rule-time-zone-table";
 import UserAccessRulesTable from "@/modules/user-access-rules/user-access-rules-table";
+import { CreateTimeZone } from "@/modules/time-zones/create-time-zone";
+import { CreateTimeSpan } from "@/modules/time-spans/create-time-span";
 
 export default function Times() {
   return (
@@ -24,12 +26,12 @@ export default function Times() {
         </Link>
         <div className="w-full flex justify-between items-end">
           <h2 className="text-xl">Horários</h2>
-          {/* <CreateTimeZone /> */}
+          <CreateTimeZone />
         </div>
         <TimeZonesTable />
         <div className="w-full flex justify-between items-end">
           <h2 className="text-xl">Intervalos</h2>
-          {/* <CreateTimeZone /> */}
+          <CreateTimeSpan />
         </div>
         <TimeSpansTable />
         <div className="w-full flex justify-between items-end">

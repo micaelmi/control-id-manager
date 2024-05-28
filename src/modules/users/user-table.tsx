@@ -49,7 +49,7 @@ export default function UserTable() {
   }, [update]);
 
   async function confirmAlert(id: number) {
-    const user: DeleteResponse | null = await deleteObject("user", id);
+    const user: DeleteResponse | null = await deleteObject("users", id);
     if (user && user.status === 200 && user.data.changes === 1) {
       toast.success("Usuário excluído!", {
         theme: "colored",
