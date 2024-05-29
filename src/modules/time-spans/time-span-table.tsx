@@ -26,10 +26,10 @@ import { toast } from "react-toastify";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { deleteObject } from "@/lib/delete-item";
-import { useTimeZoneUpdate } from "@/contexts/time-zone-update-context";
+import { useDefaultUpdate } from "@/contexts/default-update-context";
 
 export default function TimeSpansTable() {
-  const { update } = useTimeZoneUpdate();
+  const { update } = useDefaultUpdate();
   const [timeSpans, setTimeSpans] = useState<TimeSpans[]>([]);
   async function getTimeSpans() {
     const session = Cookies.get("session");

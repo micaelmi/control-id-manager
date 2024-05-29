@@ -25,11 +25,11 @@ import { Trash2Icon } from "lucide-react";
 import { toast } from "react-toastify";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useGroupUpdate } from "@/contexts/group-update-context";
-import { deleteAllObjects } from "@/lib/delete-item";
+import { useDefaultUpdate } from "@/contexts/default-update-context";
+import { deleteRelationObject } from "@/lib/delete-item";
 
 export default function UserGroupTable() {
-  const { update } = useGroupUpdate();
+  const { update } = useDefaultUpdate();
   const [userGroups, setUserGroups] = useState<UserGroups[]>([]);
   async function getGroups() {
     const session = Cookies.get("session");
@@ -46,12 +46,16 @@ export default function UserGroupTable() {
     getGroups();
   }, [update]);
 
-  async function confirmAlert() {
-    const user_groups: DeleteResponse | null = await deleteAllObjects(
-      "user_groups"
+  async function confirmAlert(id_1: number, id_2: number) {
+    const group: DeleteResponse | null = await deleteRelationObject(
+      "user_groups",
+      "user_id",
+      "group_id",
+      id_1,
+      id_2
     );
-    if (user_groups && user_groups.status === 200) {
-      toast.success("Relações excluídas!", {
+    if (group && group.status === 200 && group.data.changes === 1) {
+      toast.success("Relação excluída!", {
         theme: "colored",
       });
       getGroups();
@@ -70,6 +74,7 @@ export default function UserGroupTable() {
             <TableRow className="bg-secondary hover:bg-secondary">
               <TableHead>Usuário</TableHead>
               <TableHead>Grupo</TableHead>
+              <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -78,6 +83,38 @@ export default function UserGroupTable() {
                 <TableRow key={item.user_id + item.group_id}>
                   <TableCell>{item.user_id}</TableCell>
                   <TableCell>{item.group_id}</TableCell>
+                  <TableCell>
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        className={cn(
+                          buttonVariants({ variant: "ghost" }),
+                          "aspect-square p-0"
+                        )}
+                      >
+                        <Trash2Icon />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Tem certeza que você deseja excluir esta relação?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta ação não poderá ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() =>
+                              confirmAlert(item.user_id, item.group_id)
+                            }
+                          >
+                            Confirmar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
@@ -94,29 +131,6 @@ export default function UserGroupTable() {
           </TableBody>
         </Table>
       </div>
-      <AlertDialog>
-        <AlertDialogTrigger
-          className={cn(buttonVariants({ variant: "default" }), "flex gap-2")}
-        >
-          <Trash2Icon /> Apagar Relações
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Tem certeza que você deseja excluir este grupo?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não poderá ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmAlert()}>
-              Confirmar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

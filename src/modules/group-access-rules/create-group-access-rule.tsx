@@ -22,17 +22,17 @@ import { FilePlus2Icon } from "lucide-react";
 import { useDefaultUpdate } from "@/contexts/default-update-context";
 
 const FormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Digite o nome do grupo.",
-  }),
+  group_id: z.string(),
+  access_rule_id: z.string(),
 });
 
-export function CreateGroup() {
+export function CreateGroupAccessRule() {
   const { triggerUpdate } = useDefaultUpdate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: "",
+      group_id: "",
+      access_rule_id: "",
     },
   });
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -41,20 +41,22 @@ export function CreateGroup() {
       const response = await api.post(
         `create_objects.fcgi?session=${session}`,
         {
-          object: "groups",
+          object: "group_access_rules",
           values: [
             {
-              name: data.name,
+              group_id: Number(data.group_id),
+              access_rule_id: Number(data.access_rule_id),
             },
           ],
         }
       );
       if (response.status === 200) {
-        toast.success("Grupo registrado!", {
+        toast.success("Relação registrada!", {
           theme: "colored",
         });
         form.reset({
-          name: "",
+          group_id: "",
+          access_rule_id: "",
         });
         triggerUpdate();
       }
@@ -70,14 +72,14 @@ export function CreateGroup() {
     <Sheet>
       <SheetTrigger asChild>
         <Button className="flex gap-2">
-          <FilePlus2Icon /> Criar grupo
+          <FilePlus2Icon /> Criar relação
         </Button>
       </SheetTrigger>
       <SheetContent side={"right"}>
         <SheetHeader>
-          <SheetTitle>Criar grupo</SheetTitle>
+          <SheetTitle>Criar relação</SheetTitle>
           <SheetDescription>
-            Cadastre aqui um novo grupo de usuários.
+            Relacione aqui um grupo à uma regra de acesso.
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -87,9 +89,17 @@ export function CreateGroup() {
           >
             <InputItem
               control={form.control}
-              name="name"
-              label="Nome do grupo"
-              placeholder="Digite o nome do grupo"
+              type="number"
+              name="group_id"
+              label="ID do grupo"
+              placeholder="Digite o ID do grupo"
+            />
+            <InputItem
+              control={form.control}
+              type="number"
+              name="access_rule_id"
+              label="ID da regra de acesso"
+              placeholder="Digite o ID da regra de acesso"
             />
             <SheetFooter>
               <SheetClose asChild>

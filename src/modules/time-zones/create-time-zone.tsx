@@ -1,4 +1,3 @@
-// POST /create_objects.fcgi
 "use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,11 +16,10 @@ import {
 } from "@/components/ui/sheet";
 import { InputItem } from "@/components/form-item";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import api from "@/lib/axios";
 import Cookies from "js-cookie";
 import { FilePlus2Icon } from "lucide-react";
-import { useTimeZoneUpdate } from "@/contexts/time-zone-update-context";
+import { useDefaultUpdate } from "@/contexts/default-update-context";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -30,7 +28,7 @@ const FormSchema = z.object({
 });
 
 export function CreateTimeZone() {
-  const { triggerUpdate } = useTimeZoneUpdate();
+  const { triggerUpdate } = useDefaultUpdate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {

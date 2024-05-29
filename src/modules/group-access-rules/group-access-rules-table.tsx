@@ -28,59 +28,40 @@ import { cn } from "@/lib/utils";
 import { deleteObject } from "@/lib/delete-item";
 import { useDefaultUpdate } from "@/contexts/default-update-context";
 
-export default function UserAccessRulesTable() {
+export default function GroupAccessRulesTable() {
   const { update } = useDefaultUpdate();
-  const [userAccessRules, setUserAccessRules] = useState<UserAccessRules[]>([]);
-  async function getUserAccessRules() {
+  const [groupAccessRules, setGroupAccessRules] = useState<GroupAccessRules[]>(
+    []
+  );
+  async function getGroupAccessRules() {
     const session = Cookies.get("session");
     try {
       const response = await api.post(`load_objects.fcgi?session=${session}`, {
-        object: "user_access_rules",
+        object: "group_access_rules",
       });
-      setUserAccessRules(response.data.user_access_rules);
+      setGroupAccessRules(response.data.group_access_rules);
     } catch (error) {
       console.log(error);
     }
   }
   useEffect(() => {
-    getUserAccessRules();
+    getGroupAccessRules();
   }, [update]);
-
-  async function confirmAlert(id: number) {
-    const user_access_rules: DeleteResponse | null = await deleteObject(
-      "user_access_rules",
-      id
-    );
-    if (
-      user_access_rules &&
-      user_access_rules.status === 200 &&
-      user_access_rules.data.changes === 1
-    ) {
-      toast.success("Regra de acesso excluído!", {
-        theme: "colored",
-      });
-      getUserAccessRules();
-    } else {
-      toast.error("Algo deu errado", {
-        theme: "colored",
-      });
-    }
-  }
 
   return (
     <div className="w-full max-h-[60vh] overflow-auto">
       <Table className="w-full border">
         <TableHeader>
           <TableRow className="bg-secondary hover:bg-secondary">
-            <TableHead>Id do usuário</TableHead>
-            <TableHead>Id da regra de acesso</TableHead>
+            <TableHead>ID do grupo</TableHead>
+            <TableHead>ID da regra de acesso</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {userAccessRules.length > 0 ? (
-            userAccessRules.map((item) => (
-              <TableRow key={item.access_rule_id + item.user_id}>
-                <TableCell>{item.user_id}</TableCell>
+          {groupAccessRules.length > 0 ? (
+            groupAccessRules.map((item) => (
+              <TableRow key={item.access_rule_id + item.group_id}>
+                <TableCell>{item.group_id}</TableCell>
                 <TableCell>{item.access_rule_id}</TableCell>
               </TableRow>
             ))

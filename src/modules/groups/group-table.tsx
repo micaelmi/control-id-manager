@@ -25,11 +25,11 @@ import { Trash2Icon } from "lucide-react";
 import { toast } from "react-toastify";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useGroupUpdate } from "@/contexts/group-update-context";
+import { useDefaultUpdate } from "@/contexts/default-update-context";
 import { deleteObject } from "@/lib/delete-item";
 
 export default function GroupTable() {
-  const { update } = useGroupUpdate();
+  const { update } = useDefaultUpdate();
   const [groups, setGroups] = useState<Group[]>([]);
   async function getGroups() {
     const session = Cookies.get("session");
@@ -47,7 +47,7 @@ export default function GroupTable() {
   }, [update]);
 
   async function confirmAlert(id: number) {
-    const group: DeleteResponse | null = await deleteObject("group", id);
+    const group: DeleteResponse | null = await deleteObject("groups", id);
     if (group && group.status === 200 && group.data.changes === 1) {
       toast.success("Grupo excluído!", {
         theme: "colored",

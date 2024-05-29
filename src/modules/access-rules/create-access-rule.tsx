@@ -23,16 +23,20 @@ import { useDefaultUpdate } from "@/contexts/default-update-context";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
-    message: "Digite o nome do grupo.",
+    message: "Digite o nome da regra.",
   }),
+  type: z.string(),
+  priority: z.string(),
 });
 
-export function CreateGroup() {
+export function CreateAccessRule() {
   const { triggerUpdate } = useDefaultUpdate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: "",
+      type: "",
+      priority: "0",
     },
   });
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -41,20 +45,24 @@ export function CreateGroup() {
       const response = await api.post(
         `create_objects.fcgi?session=${session}`,
         {
-          object: "groups",
+          object: "access_rules",
           values: [
             {
               name: data.name,
+              type: Number(data.type),
+              priority: Number(data.priority),
             },
           ],
         }
       );
       if (response.status === 200) {
-        toast.success("Grupo registrado!", {
+        toast.success("Regra registrada!", {
           theme: "colored",
         });
         form.reset({
           name: "",
+          type: "",
+          priority: "0",
         });
         triggerUpdate();
       }
@@ -70,14 +78,14 @@ export function CreateGroup() {
     <Sheet>
       <SheetTrigger asChild>
         <Button className="flex gap-2">
-          <FilePlus2Icon /> Criar grupo
+          <FilePlus2Icon /> Criar regra de acesso
         </Button>
       </SheetTrigger>
       <SheetContent side={"right"}>
         <SheetHeader>
-          <SheetTitle>Criar grupo</SheetTitle>
+          <SheetTitle>Criar regra de acesso</SheetTitle>
           <SheetDescription>
-            Cadastre aqui um novo grupo de usuários.
+            Cadastre aqui uma nova regra de acesso.
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -88,8 +96,22 @@ export function CreateGroup() {
             <InputItem
               control={form.control}
               name="name"
-              label="Nome do grupo"
-              placeholder="Digite o nome do grupo"
+              label="Nome da regra de acesso"
+              placeholder="Digite o nome da regra de acesso"
+            />
+            <InputItem
+              control={form.control}
+              type="number"
+              name="type"
+              label="Tipo"
+              placeholder="0 = bloqueio | 1 = permissão"
+            />
+            <InputItem
+              control={form.control}
+              type="number"
+              name="priority"
+              label="Prioridade"
+              placeholder="Padrão = 0"
             />
             <SheetFooter>
               <SheetClose asChild>

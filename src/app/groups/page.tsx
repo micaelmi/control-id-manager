@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { GroupUpdateProvider } from "@/contexts/group-update-context";
+import { DefaultUpdateProvider } from "@/contexts/default-update-context";
 import { CreateGroup } from "@/modules/groups/create-group";
 import GroupTable from "@/modules/groups/group-table";
 import { CreateUserGroup } from "@/modules/user-groups/create-user-group";
@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 export default function Groups() {
   return (
-    <GroupUpdateProvider>
+    <DefaultUpdateProvider>
       <section className="py-2 flex flex-col justify-center items-start gap-4">
         <Link
           href="/"
@@ -34,6 +34,6 @@ export default function Groups() {
         </div>
         <UserGroupTable />
       </section>
-    </GroupUpdateProvider>
+    </DefaultUpdateProvider>
   );
 }
