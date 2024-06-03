@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import api from "@/lib/axios";
 import Cookies from "js-cookie";
-import { useUserUpdate } from "@/contexts/user-update-context";
+import { useDefaultUpdate } from "@/contexts/default-update-context";
 import {
   Table,
   TableBody,
@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils";
 import { deleteObject } from "@/lib/delete-item";
 
 export default function UserTable() {
-  const { update } = useUserUpdate();
+  const { update } = useDefaultUpdate();
   const [users, setUsers] = useState<User[]>([]);
   async function getUsers() {
     const session = Cookies.get("session");

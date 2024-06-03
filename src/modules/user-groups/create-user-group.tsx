@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/sheet";
 import { InputItem } from "@/components/form-item";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import api from "@/lib/axios";
 import Cookies from "js-cookie";
 import { FilePlus2Icon } from "lucide-react";

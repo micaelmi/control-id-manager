@@ -16,10 +16,9 @@ import {
 } from "@/components/ui/sheet";
 import { InputItem } from "@/components/form-item";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import api from "@/lib/axios";
 import Cookies from "js-cookie";
-import { useUserUpdate } from "@/contexts/user-update-context";
+import { useDefaultUpdate } from "@/contexts/default-update-context";
 import { FilePlus2Icon } from "lucide-react";
 
 const FormSchema = z.object({
@@ -31,7 +30,7 @@ const FormSchema = z.object({
 });
 
 export function CreateUser() {
-  const { triggerUpdate } = useUserUpdate();
+  const { triggerUpdate } = useDefaultUpdate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
